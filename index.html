@@ -391,8 +391,73 @@ function calcData(tasks,users,iterations){
   var avgIter=employees.filter(function(e){return e.iterCount>0;});
   var globalAvgIter=avgIter.length?Math.round(avgIter.reduce(function(s,e){return s+e.avgIter;},0)/avgIter.length*10)/10:0;
 
+  // ── Project-level analytics ──
+  var projAcc={};
+  tasks.forEach(function(t){
+    var gid=t.groupId||t.GROUP_ID||'';
+    var gname=groupMap[gid]||gid||'Без проекта';
+    var st=t.status||t.STATUS;
+    var dl=t.deadline||t.DEADLINE;
+    var uid=t.responsibleId||t.RESPONSIBLE_ID;
+    if(!projAcc[gname])projAcc[gname]={name:gname,total:0,done:0,inProgress:0,overdue:0,
+      members:new Set(),totalDays:0,doneCount:0,weightSum:0};
+    var p=projAcc[gname];
+    p.total++;
+    if(uid)p.members.add(uid);
+    var w=weightLabel(t.mark||t.MARK||'',t.priority||t.PRIORITY||'1');
+    p.weightSum+=w.score;
+    if(st==='4'||st==='5'){
+      p.done++;
+      var cd=new Date(t.createdDate||t.CREATED_DATE);
+      var cl=t.closedDate||t.CLOSED_DATE;
+      if(cl){var dys=Math.floor((new Date(cl)-cd)/86400000);if(dys>=0){p.totalDays+=dys;p.doneCount++;}}
+    }
+    if(st==='3')p.inProgress++;
+    if(dl&&new Date(dl)<now&&st!=='4')p.overdue++;
+  });
+  var projects=Object.values(projAcc).map(function(p){
+    return{
+      name:p.name,total:p.total,done:p.done,inProgress:p.inProgress,overdue:p.overdue,
+      members:p.members.size,
+      pctDone:p.total?Math.round(p.done/p.total*100):0,
+      pctOverdue:p.total?Math.round(p.overdue/p.total*100):0,
+      avgDays:p.doneCount?Math.round(p.totalDays/p.doneCount):0,
+      avgWeight:p.total?Math.round(p.weightSum/p.total*10)/10:0
+    };
+  }).sort(function(a,b){return b.total-a.total;});
+
+  // ── Workload buckets per employee ──
+  var now7=new Date(now);now7.setDate(now.getDate()-7);
+  var now14=new Date(now);now14.setDate(now.getDate()-14);
+  var now30=new Date(now);now30.setDate(now.getDate()-30);
+  Object.values(emp).forEach(function(e){
+    // count tasks created in last 7/14/30 days
+    e.last7=e.tasks.filter(function(t){
+      var orig=tasks.find(function(x){return String(x.id||x.ID)===String(t.id);});
+      if(!orig)return false;
+      var cd=new Date(orig.createdDate||orig.CREATED_DATE);
+      return cd>=now7;
+    }).length;
+    e.last14=e.tasks.filter(function(t){
+      var orig=tasks.find(function(x){return String(x.id||x.ID)===String(t.id);});
+      if(!orig)return false;
+      var cd=new Date(orig.createdDate||orig.CREATED_DATE);
+      return cd>=now14&&cd<now7;
+    }).length;
+    // overdue ratio
+    e.overdueRatio=e.total?Math.round(e.overdue/e.total*100):0;
+    // completion ratio
+    e.completionRatio=e.total?Math.round(e.done/e.total*100):0;
+    // load status
+    if(e.inProgress>=8||e.overdue>=4)e.loadStatus='перегрузка';
+    else if(e.inProgress>=4||e.overdue>=2)e.loadStatus='высокая';
+    else if(e.inProgress>=1)e.loadStatus='норма';
+    else e.loadStatus='свободен';
+  });
+
   return{employees:employees,topRating:topRating,overdue:overdue,statusDist:Object.entries(sacc),
-    weeks:weeks,months:months,total:tasks.length,topIter:topIter,globalAvgIter:globalAvgIter,weightDist:weightDist};
+    weeks:weeks,months:months,total:tasks.length,topIter:topIter,globalAvgIter:globalAvgIter,
+    weightDist:weightDist,projects:projects};
 }
 
 async function runAI(data){
@@ -588,11 +653,17 @@ function renderDash(data,ai){
     +'<div style="font-size:21px;font-weight:700;">'+cfg.projName+(cfg.period?' · '+cfg.period+' дн.':'')+'</div></div>'
     +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'
     +'<span style="font-size:11px;color:var(--dim);font-family:var(--mono);">'+new Date().toLocaleString('ru')+'</span>'
-    +'<button class="acc-btn" onclick="changeProject()">↻ Фильтры</button>'
-    +'<button class="sm-btn" style="color:var(--success);" onclick="exportCSV()">⬇ Excel</button>'
-    +'<button class="pdf-btn" onclick="exportPDF()">📄 PDF</button>'
-    +'<button class="sm-btn" onclick="showSetup()">⚙</button>'
+    +'<button class="acc-btn" onclick="changeProject()">&#8635; Фильтры</button>'
+    +'<button class="sm-btn" style="color:var(--success);" onclick="exportCSV()">&#8595; Excel</button>'
+    +'<button class="pdf-btn" onclick="exportPDF()">&#128196; PDF</button>'
+    +'<button class="sm-btn" onclick="showSetup()">&#9881;</button>'
     +'</div></div>'
+    +'<div class="no-print" style="display:flex;gap:6px;margin-bottom:14px;background:var(--surface);border-radius:10px;padding:4px;">'
+    +'<button id="tab-main" onclick="switchTab(\'main\')" style="flex:1;padding:7px 10px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:var(--accent);color:#0a1628;transition:all 0.2s;">&#128202; Обзор</button>'
+    +'<button id="tab-load" onclick="switchTab(\'load\')" style="flex:1;padding:7px 10px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--text);transition:all 0.2s;">&#128101; Занятость</button>'
+    +'<button id="tab-projects" onclick="switchTab(\'projects\')" style="flex:1;padding:7px 10px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--text);transition:all 0.2s;">&#128193; По проектам</button>'
+    +'</div>'
+    +'<div id="sec-main">'
 
     +'<div class="kpis">'
     +'<div class="kpi"><div class="kpi-lbl">Всего задач</div><div class="kpi-val">'+data.total+'</div></div>'
@@ -647,6 +718,47 @@ function renderDash(data,ai){
     +'<span class="bdg" style="background:rgba(232,84,35,0.15);color:#e85423;border:1px solid rgba(232,84,35,0.3);">'+data.overdue.length+'</span>'
     +'</div>'+oitems+(data.overdue.length>10?'<div style="font-size:12px;color:var(--dim);text-align:center;padding:8px;">...и ещё '+(data.overdue.length-10)+' задач</div>':'')
     +'</div>':'')
+    +'</div>'
+    +'</div>'
+    +'<div id="sec-load" style="display:none;">'
+    +'<div class="tbl-card">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">'
+    +'<div style="display:flex;align-items:center;gap:10px;"><span class="sec-title" style="margin:0;">&#128101; Занятость сотрудников</span><span id="load-count" style="font-size:11px;color:var(--dim);"></span></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+    +'<input type="text" placeholder="Поиск по имени..." oninput="filterLoad(this.value)" style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 10px;color:var(--text);font-size:12px;width:160px;"/>'
+    +'<select onchange="filterLoadStatus(this.value)" style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 8px;color:var(--text);font-size:12px;">'
+    +'<option value="all">Все статусы</option>'
+    +'<option value="перегрузка">Перегрузка</option>'
+    +'<option value="высокая">Высокая</option>'
+    +'<option value="норма">Норма</option>'
+    +'<option value="свободен">Свободен</option>'
+    +'</select>'
+    +'<button class="sm-btn" onclick="exportLoadCSV()" style="color:var(--success);">&#8595; Excel</button>'
+    +'</div></div>'
+    +'<div style="font-size:11px;color:var(--dim);margin-bottom:10px;">Нажмите на заголовок столбца для сортировки. Мини-полосы = визуальная пропорция от максимума.</div>'
+    +'<div id="load-table-wrap"></div>'
+    +'</div>'
+    // load cards summary
+    +'<div class="kpis" style="margin-top:14px;">'
+    +'<div class="kpi"><div class="kpi-lbl">Всего сотрудников</div><div class="kpi-val">'+data.employees.length+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl" style="color:#e85423;">Перегружены</div><div class="kpi-val" style="color:#e85423;">'+data.employees.filter(function(e){return e.loadStatus==='перегрузка';}).length+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl" style="color:#e8a923;">Высокая нагрузка</div><div class="kpi-val" style="color:#e8a923;">'+data.employees.filter(function(e){return e.loadStatus==='высокая';}).length+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl" style="color:#23c95e;">Норма</div><div class="kpi-val" style="color:#23c95e;">'+data.employees.filter(function(e){return e.loadStatus==='норма';}).length+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl" style="color:#718096;">Свободны</div><div class="kpi-val" style="color:#718096;">'+data.employees.filter(function(e){return e.loadStatus==='свободен';}).length+'</div></div>'
+    +'</div>'
+    +'</div>'
+    +'<div id="sec-projects" style="display:none;">'
+    +'<div class="tbl-card">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">'
+    +'<div style="display:flex;align-items:center;gap:10px;"><span class="sec-title" style="margin:0;">&#128193; Аналитика по проектам</span><span id="proj-count" style="font-size:11px;color:var(--dim);"></span></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+    +'<input type="text" placeholder="Поиск по проекту..." oninput="filterProj(this.value)" style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 10px;color:var(--text);font-size:12px;width:180px;"/>'
+    +'<button class="sm-btn" onclick="exportProjCSV()" style="color:var(--success);">&#8595; Excel</button>'
+    +'</div></div>'
+    +'<div style="font-size:11px;color:var(--dim);margin-bottom:10px;">Нажмите на заголовок столбца для сортировки. Полосы прогресса — % от общего числа задач проекта.</div>'
+    +'<div id="proj-table-wrap"></div>'
+    +'</div>'
+    +'</div>'
     +'</div>';
 
   [barC,pieC,dynC].forEach(function(c){if(c)c.destroy();});barC=pieC=dynC=null;
@@ -657,10 +769,124 @@ function renderDash(data,ai){
   var dCtx=el('dynC');
   if(dCtx)dynC=new Chart(dCtx,{type:'line',data:{labels:data.months.map(function(m){return m.label;}),datasets:[{label:'Создано',data:data.months.map(function(m){return m.created;}),borderColor:'#e8a923',backgroundColor:'rgba(232,169,35,0.1)',tension:0.4,fill:true},{label:'Закрыто',data:data.months.map(function(m){return m.closed;}),borderColor:'#23c95e',backgroundColor:'rgba(35,201,94,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#718096',font:{size:11}}}},scales:{x:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}},y:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}}}}});
   window._dd=data;
+  renderLoadTable();
+  renderProjTable();
 }
 
 function changeProject(){
   showProjectStep(allGroups);
+}
+
+// ── Tab switching ──
+function switchTab(tab){
+  ['tab-main','tab-load','tab-projects'].forEach(function(id){
+    var btn=el(id);
+    if(btn){btn.style.background=id==='tab-'+tab?'var(--accent)':'var(--surface)';btn.style.color=id==='tab-'+tab?'#0a1628':'var(--text)';}
+  });
+  ['sec-main','sec-load','sec-projects'].forEach(function(id){
+    var s=el(id);if(s)s.style.display='none';
+  });
+  var show=el('sec-'+tab);if(show)show.style.display='block';
+}
+
+// ── Workload sort/filter state ──
+var _loadSort={col:'total',dir:-1};
+var _loadFilter='';
+var _loadFilter2='all';
+var _projSort={col:'total',dir:-1};
+var _projFilter='';
+
+function sortLoad(col){
+  if(_loadSort.col===col)_loadSort.dir*=-1;
+  else{_loadSort.col=col;_loadSort.dir=-1;}
+  renderLoadTable();
+}
+function filterLoad(v){_loadFilter=v.toLowerCase();renderLoadTable();}
+function filterLoadStatus(v){_loadFilter2=v;renderLoadTable();}
+
+function renderLoadTable(){
+  var d=window._dd;if(!d)return;
+  var emps=d.employees.slice();
+  if(_loadFilter)emps=emps.filter(function(e){return e.name.toLowerCase().indexOf(_loadFilter)>=0;});
+  if(_loadFilter2&&_loadFilter2!=='all')emps=emps.filter(function(e){return e.loadStatus===_loadFilter2;});
+  emps.sort(function(a,b){
+    var av=a[_loadSort.col]||0,bv=b[_loadSort.col]||0;
+    if(typeof av==='string')return _loadSort.dir*(av.localeCompare(bv,'ru'));
+    return _loadSort.dir*(bv-av);
+  });
+  var th=function(col,label){
+    var active=_loadSort.col===col;
+    var arrow=active?(_loadSort.dir===-1?' &#8595;':' &#8593;'):'';
+    return '<th style="cursor:pointer;user-select:none;'+(active?'color:var(--accent);':'')+'" onclick="sortLoad(\''+col+'\')">'+label+arrow+'</th>';
+  };
+  var html='<table><thead><tr>'+th('name','Сотрудник')+th('total','Всего')+th('inProgress','В работе')+th('done','Выполнено')+th('overdue','Просрочено')+th('overdueRatio','% просрочек')+th('completionRatio','% выполнения')+th('avgDays','Ср.дней')+th('avgWeight','Вес')+th('score','Рейтинг')+th('loadStatus','Загрузка')+'</tr></thead><tbody>';
+  var maxTotal=emps.reduce(function(mx,e){return Math.max(mx,e.total);},1);
+  emps.forEach(function(e){
+    var lc={'перегрузка':'#e85423','высокая':'#e8a923','норма':'#23c95e','свободен':'#718096'}[e.loadStatus]||'#718096';
+    var miniBar=function(v,max,color){
+      var pct=max?Math.min(100,Math.round(v/max*100)):0;
+      return '<div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;background:var(--border);border-radius:3px;height:5px;min-width:40px;"><div style="width:'+pct+'%;height:5px;border-radius:3px;background:'+color+';"></div></div><span style="font-family:var(--mono);font-size:11px;min-width:18px;text-align:right;">'+v+'</span></div>';
+    };
+    html+='<tr>'
+      +'<td><div style="font-weight:600;">'+e.name+'</div>'
+      +'<div style="font-size:10px;color:var(--dim);">'+Object.keys(e.projects).length+' проект(ов)</div></td>'
+      +'<td>'+miniBar(e.total,maxTotal,'var(--accent)')+'</td>'
+      +'<td>'+miniBar(e.inProgress,e.total,'#e8a923')+'</td>'
+      +'<td>'+miniBar(e.done,e.total,'#23c95e')+'</td>'
+      +'<td style="color:'+(e.overdue>0?'#e85423':'#718096')+';font-weight:'+(e.overdue>0?'700':'400')+';">'+(e.overdue>0?'&#9888; ':'')+e.overdue+'</td>'
+      +'<td><span style="font-family:var(--mono);font-size:12px;color:'+(e.overdueRatio>30?'#e85423':e.overdueRatio>10?'#e8a923':'#23c95e')+';">'+e.overdueRatio+'%</span></td>'
+      +'<td><span style="font-family:var(--mono);font-size:12px;color:'+(e.completionRatio>70?'#23c95e':e.completionRatio>40?'#e8a923':'#e85423')+';">'+e.completionRatio+'%</span></td>'
+      +'<td style="font-family:var(--mono);color:var(--dim);">'+(e.avgDays?e.avgDays+' д':'—')+'</td>'
+      +'<td style="font-size:11px;color:'+(e.avgWeight>=2.5?'#e85423':e.avgWeight>=1.8?'#e8a923':'#23c95e')+';">'+e.avgWeight+'</td>'
+      +'<td><span style="font-family:var(--mono);font-weight:700;color:'+sc(e.score)+';">'+e.score+'</span></td>'
+      +'<td><span class="bdg" style="background:'+lc+'22;color:'+lc+';border:1px solid '+lc+'44;">'+e.loadStatus+'</span></td>'
+      +'</tr>';
+  });
+  html+='</tbody></table>';
+  var tb=el('load-table-wrap');if(tb)tb.innerHTML=html;
+  var cnt=el('load-count');if(cnt)cnt.textContent=emps.length+' сотр.';
+}
+
+function sortProj(col){
+  if(_projSort.col===col)_projSort.dir*=-1;
+  else{_projSort.col=col;_projSort.dir=-1;}
+  renderProjTable();
+}
+function filterProj(v){_projFilter=v.toLowerCase();renderProjTable();}
+
+function renderProjTable(){
+  var d=window._dd;if(!d||!d.projects)return;
+  var projs=d.projects.slice();
+  if(_projFilter)projs=projs.filter(function(p){return p.name.toLowerCase().indexOf(_projFilter)>=0;});
+  projs.sort(function(a,b){
+    var av=a[_projSort.col]||0,bv=b[_projSort.col]||0;
+    if(typeof av==='string')return _projSort.dir*(av.localeCompare(bv,'ru'));
+    return _projSort.dir*(bv-av);
+  });
+  var th=function(col,label){
+    var active=_projSort.col===col;
+    var arrow=active?(_projSort.dir===-1?' &#8595;':' &#8593;'):'';
+    return '<th style="cursor:pointer;user-select:none;'+(active?'color:var(--accent);':'')+'" onclick="sortProj(\''+col+'\')">'+label+arrow+'</th>';
+  };
+  var html='<table><thead><tr>'+th('name','Проект')+th('total','Задач')+th('done','Выполнено')+th('inProgress','В работе')+th('overdue','Просрочено')+th('pctDone','% выполнения')+th('pctOverdue','% просрочек')+th('members','Участников')+th('avgDays','Ср.дней/задача')+th('avgWeight','Ср.вес')+'</tr></thead><tbody>';
+  projs.forEach(function(p){
+    var hBar=function(pct,color){return '<div class="pb" style="margin-top:3px;"><div class="pf" style="width:'+pct+'%;background:'+color+';"></div></div>';};
+    html+='<tr>'
+      +'<td><div style="font-weight:600;max-width:200px;white-space:normal;word-break:break-word;">'+p.name+'</div></td>'
+      +'<td style="font-family:var(--mono);">'+p.total+'</td>'
+      +'<td><span style="font-family:var(--mono);color:#23c95e;">'+p.done+'</span>'+hBar(p.pctDone,'#23c95e')+'</td>'
+      +'<td style="font-family:var(--mono);color:#e8a923;">'+p.inProgress+'</td>'
+      +'<td style="font-family:var(--mono);color:'+(p.overdue>0?'#e85423':'var(--dim)')+';">'+(p.overdue>0?'&#9888; ':'')+p.overdue+'</td>'
+      +'<td><span style="font-family:var(--mono);color:'+(p.pctDone>70?'#23c95e':p.pctDone>40?'#e8a923':'#e85423')+';">'+p.pctDone+'%</span>'+hBar(p.pctDone,'#23c95e')+'</td>'
+      +'<td><span style="font-family:var(--mono);color:'+(p.pctOverdue>30?'#e85423':p.pctOverdue>10?'#e8a923':'#23c95e')+';">'+p.pctOverdue+'%</span>'+hBar(p.pctOverdue,'#e85423')+'</td>'
+      +'<td style="font-family:var(--mono);">'+p.members+'</td>'
+      +'<td style="font-family:var(--mono);color:var(--dim);">'+(p.avgDays?p.avgDays+' д':'—')+'</td>'
+      +'<td style="font-size:11px;color:'+(p.avgWeight>=2.5?'#e85423':p.avgWeight>=1.8?'#e8a923':'#23c95e')+';">'+p.avgWeight+'</td>'
+      +'</tr>';
+  });
+  html+='</tbody></table>';
+  var tb=el('proj-table-wrap');if(tb)tb.innerHTML=html;
+  var cnt=el('proj-count');if(cnt)cnt.textContent=projs.length+' проектов';
 }
 
 function exportCSV(){
@@ -674,6 +900,34 @@ function exportCSV(){
   var a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='b24-report-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+function exportLoadCSV(){
+  if(!window._dd)return;
+  var rows=[['Сотрудник','Всего','В работе','Выполнено','Просрочено','% просрочек','% выполнения','Ср.дней','Вес','Рейтинг','Загрузка','Проектов']];
+  window._dd.employees.forEach(function(e){
+    rows.push([e.name,e.total,e.inProgress,e.done,e.overdue,e.overdueRatio,e.completionRatio,e.avgDays||0,e.avgWeight,e.score,e.loadStatus,Object.keys(e.projects).length]);
+  });
+  var csv=String.fromCharCode(0xFEFF);
+  rows.forEach(function(r){csv+=r.map(function(v){return String(v).replace(/;/g,' ');}).join(';')+'\n';});
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='b24-load-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+function exportProjCSV(){
+  if(!window._dd||!window._dd.projects)return;
+  var rows=[['Проект','Задач','Выполнено','В работе','Просрочено','% выполнения','% просрочек','Участников','Ср.дней/задача','Ср.вес']];
+  window._dd.projects.forEach(function(p){
+    rows.push([p.name,p.total,p.done,p.inProgress,p.overdue,p.pctDone,p.pctOverdue,p.members,p.avgDays||0,p.avgWeight]);
+  });
+  var csv=String.fromCharCode(0xFEFF);
+  rows.forEach(function(r){csv+=r.map(function(v){return String(v).replace(/;/g,' ');}).join(';')+'\n';});
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='b24-projects-'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
 }
 
