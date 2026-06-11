@@ -7,22 +7,20 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#0a0e1a;--surface:#111827;--card:#141c2e;--border:#1e2d45;--accent:#e8a923;--danger:#e85423;--success:#23c95e;--warning:#f0c040;--text:#e2e8f0;--dim:#718096;--font:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
 .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:500px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:520px;}
 .glow{box-shadow:0 0 40px rgba(232,169,35,0.15);border-color:rgba(232,169,35,0.4);}
 label{display:block;font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-input,select{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:var(--mono);outline:none;margin-bottom:4px;}
+input,select{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;margin-bottom:4px;}
+input{font-family:var(--mono);}
 input:focus,select:focus{border-color:var(--accent);}
 .hint{font-size:11px;color:#4a5568;margin-bottom:14px;}
 .btn{width:100%;padding:13px;background:var(--accent);color:#0a0e1a;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
 .btn:hover{opacity:.85;}
 .note{margin-top:14px;padding:12px;background:var(--surface);border-radius:8px;font-size:12px;color:var(--dim);line-height:1.7;}
-.spinner-wrap{text-align:center;padding:3rem;}
-.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;}
-@keyframes spin{to{transform:rotate(360deg);}}
 .dash{padding:20px;max-width:1600px;margin:0 auto;}
 .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
@@ -44,14 +42,14 @@ input:focus,select:focus{border-color:var(--accent);}
 .chart-box{position:relative;height:160px;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
 .tbl-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1100px;}
 th{padding:8px 10px;text-align:left;font-size:10px;color:var(--dim);letter-spacing:1px;font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
-td{padding:10px;border-bottom:1px solid rgba(30,45,69,0.5);vertical-align:middle;}
+td{padding:9px 10px;border-bottom:1px solid rgba(30,45,69,0.5);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(255,255,255,0.02);}
 .pb{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px;}
 .pf{height:100%;border-radius:2px;}
-.bdg{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;letter-spacing:1px;text-transform:uppercase;}
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:1px;text-transform:uppercase;}
 .ov-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
 .ov-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(232,84,35,0.08);border:1px solid rgba(232,84,35,0.15);border-radius:8px;margin-bottom:7px;gap:12px;}
 .ov-days{font-size:11px;font-weight:700;padding:3px 9px;background:rgba(232,84,35,0.15);color:var(--danger);border-radius:6px;white-space:nowrap;flex-shrink:0;}
@@ -59,37 +57,41 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .rt-row:last-child{border-bottom:none;}
 .sm-btn{padding:7px 13px;background:var(--surface);color:var(--dim);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;}
 .acc-btn{padding:7px 13px;background:rgba(232,169,35,0.12);color:var(--accent);border:1px solid rgba(232,169,35,0.3);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+.pdf-btn{padding:7px 13px;background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.35);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+.iter-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;font-family:var(--mono);}
+.iter-good{background:rgba(35,201,94,0.15);color:#23c95e;}
+.iter-warn{background:rgba(232,169,35,0.15);color:#e8a923;}
+.iter-bad{background:rgba(232,84,35,0.15);color:#e85423;}
+.weight-easy{background:rgba(35,201,94,0.15);color:#23c95e;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.weight-med{background:rgba(232,169,35,0.15);color:#e8a923;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.weight-hard{background:rgba(232,84,35,0.15);color:#e85423;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.proj-tag{display:inline-block;background:rgba(74,144,217,0.15);color:#4a90d9;font-size:10px;padding:2px 7px;border-radius:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;}
+.detail-row{background:rgba(20,28,46,0.8)!important;}
+.detail-row td{padding:6px 10px 10px 30px;}
+.expand-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:4px;}
+.expand-btn:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+.loading-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;}
+.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.proj-list{max-height:160px;overflow-y:auto;margin-top:8px;}
+.proj-item{padding:8px 12px;cursor:pointer;border-radius:6px;font-size:13px;color:var(--text);}
+.proj-item:hover{background:var(--surface);}
+.proj-item.active{background:rgba(232,169,35,0.12);color:var(--accent);}
+select option{background:var(--surface);color:var(--text);}
 @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr);}.charts-row,.two-col{grid-template-columns:1fr;}.ai-cols{grid-template-columns:1fr;}.ai-row{flex-direction:column;}}
-
-/* PDF styles */
-@media print {
-  .no-print { display: none !important; }
-  .dash { padding: 8px !important; }
-  body { background: #fff !important; color: #000 !important; }
-  .kpi { background: #f5f5f5 !important; border-color: #ccc !important; }
-  .ai-card { border-color: #999 !important; background: #fff !important; }
-  .tbl-card, .chart-card, .ov-card, .two-col { background: #fff !important; border-color: #ccc !important; }
-  .kpi-val { color: #000 !important; }
-  canvas { max-height: 120px !important; }
-}
-.iter-badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; font-family:var(--mono); }
-.iter-good { background:rgba(35,201,94,0.15); color:#23c95e; }
-.iter-warn { background:rgba(232,169,35,0.15); color:#e8a923; }
-.iter-bad  { background:rgba(232,84,35,0.15);  color:#e85423; }
-.pdf-btn { padding:7px 14px; background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.35); border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; }
-.loading-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,26,0.85); display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:16px; }
-.loading-overlay .spinner { width:44px; height:44px; border:3px solid #1e2d45; border-top-color:#e8a923; border-radius:50%; animation:spin 1s linear infinite; }
+@media print{.no-print{display:none!important;}.dash{padding:8px!important;}body{background:#fff!important;color:#000!important;}.kpi,.ai-card,.tbl-card,.chart-card,.ov-card,.two-col .chart-card{background:#fff!important;border-color:#ccc!important;}}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 var PIE=['#e8a923','#23c95e','#e85423','#6366f1','#06b6d4'];
-var cfg={webhook:''},projects=[],barC=null,pieC=null,dynC=null;
+var cfg={webhook:''},allGroups=[],barC=null,pieC=null,dynC=null;
 
 function el(id){return document.getElementById(id);}
 
 function showSetup(){
+  var saved='';try{saved=localStorage.getItem('b24_webhook')||'';}catch(e){}
   el('app').innerHTML='<div class="wrap"><div class="card glow">'
     +'<div style="text-align:center;margin-bottom:24px;">'
     +'<div style="font-size:11px;letter-spacing:4px;color:var(--accent);font-weight:700;margin-bottom:8px;">BITRIX24 × AI</div>'
@@ -97,31 +99,19 @@ function showSetup(){
     +'<div style="font-size:13px;color:var(--dim);">Подключите Bitrix24 для анализа задач</div>'
     +'</div>'
     +'<label>Webhook URL</label>'
-    +'<input id="wh" type="text" placeholder="https://b24-aiw4ne.bitrix24.ru/rest/103/xxxxxxxx/">'
+    +'<input id="wh" type="text" value="'+saved+'" placeholder="https://b24-aiw4ne.bitrix24.ru/rest/103/xxxxxxxx/">'
     +'<div class="hint">Разработчикам → Другое → Входящий вебхук</div>'
     +'<button class="btn" onclick="step1()">Подключить и загрузить →</button>'
-    +'<div class="note"><strong style="color:var(--text);">Права вебхука:</strong> task · user</div>'
+    +'<div class="note"><strong style="color:var(--text);">Права вебхука:</strong> task · user · sonet_group</div>'
     +'</div></div>';
 }
 
 function showLoading(msg,sub){
-  el('app').innerHTML='<div class="wrap"><div style="text-align:center;">'
-    +'<div class="spinner" style="margin:0 auto 16px;"></div>'
+  el('app').innerHTML='<div class="loading-wrap">'
+    +'<div class="spinner"></div>'
     +'<div style="font-size:17px;font-weight:600;margin-bottom:6px;">'+msg+'</div>'
     +'<div style="font-size:13px;color:var(--dim);">'+(sub||'')+'</div>'
-    +'</div></div>';
-}
-
-function showOverlay(msg){
-  var d=document.createElement('div');
-  d.id='overlay';d.className='loading-overlay';
-  d.innerHTML='<div class="spinner"></div><div style="color:#e2e8f0;font-size:15px;">'+msg+'</div>';
-  document.body.appendChild(d);
-}
-
-function hideOverlay(){
-  var d=el('overlay');
-  if(d)d.remove();
+    +'</div>';
 }
 
 function showErr(msg){
@@ -138,8 +128,7 @@ async function b24(method,params){
   var qs=new URLSearchParams();
   function flat(obj,pfx){
     Object.entries(obj||{}).forEach(function(kv){
-      var k=kv[0],v=kv[1];
-      var key=pfx?pfx+'['+k+']':k;
+      var k=kv[0],v=kv[1],key=pfx?pfx+'['+k+']':k;
       if(Array.isArray(v))v.forEach(function(i,idx){qs.append(key+'['+idx+']',i);});
       else if(v!==null&&typeof v==='object')flat(v,key);
       else qs.append(key,v);
@@ -157,22 +146,42 @@ async function step1(){
   var wh=el('wh').value.trim();
   if(!wh){alert('Введите Webhook URL');return;}
   cfg.webhook=wh;
-  showLoading('Подключаемся...','Проверяем соединение');
+  try{localStorage.setItem('b24_webhook',wh);}catch(e){}
+  showLoading('Подключаемся...','Загружаем список проектов');
   try{
     await b24('profile',{});
-    showProjectStep();
+    var groups=await fetchGroups();
+    allGroups=groups;
+    showProjectStep(groups);
   }catch(e){showErr(e.message);}
 }
 
-function showProjectStep(){
-  el('app').innerHTML='<div class="wrap"><div class="card">'
+async function fetchGroups(){
+  try{
+    var all=[],start=0;
+    while(true){
+      var r=await b24('sonet_group.get',{filter:{ACTIVE:'Y'},select:['ID','NAME'],start:start});
+      var arr=Array.isArray(r)?r:(r.groups||[]);
+      all=all.concat(arr);
+      if(arr.length<50)break;
+      start+=50;
+    }
+    return all.sort(function(a,b){return a.NAME.localeCompare(b.NAME,'ru');});
+  }catch(e){return[];}
+}
+
+function showProjectStep(groups){
+  var opts='<option value="">— Все задачи —</option>';
+  groups.forEach(function(g){opts+='<option value="'+g.ID+'">'+g.NAME+'</option>';});
+
+  el('app').innerHTML='<div class="wrap"><div class="card" style="max-width:520px;">'
     +'<div style="text-align:center;margin-bottom:22px;">'
     +'<div style="font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700;margin-bottom:6px;">ШАГ 2</div>'
     +'<div style="font-size:22px;font-weight:700;">Выберите проект и период</div>'
     +'</div>'
-    +'<label>ID проекта / группы</label>'
-    +'<input id="proj" type="text" placeholder="Оставьте пустым для всех задач">'
-    +'<div class="hint" style="margin-bottom:14px;">Откройте проект в Bitrix24 — число после /group/ в адресе</div>'
+    +'<label>Проект / Группа (найдено: '+groups.length+')</label>'
+    +'<select id="proj" style="margin-bottom:4px;">'+opts+'</select>'
+    +'<div class="hint" style="margin-bottom:14px;">Выберите конкретный проект или оставьте пустым для всех задач</div>'
     +'<label>Период</label>'
     +'<select id="period" style="margin-bottom:20px;">'
     +'<option value="0">Всё время</option>'
@@ -189,9 +198,9 @@ function showProjectStep(){
 
 async function loadData(){
   var projEl=el('proj'),perEl=el('period');
-  cfg.project=projEl?projEl.value.trim():'';
+  cfg.project=projEl?projEl.value:'';
   cfg.period=perEl?parseInt(perEl.value):30;
-  cfg.projName=cfg.project?('Проект #'+cfg.project):'Все задачи';
+  cfg.projName=cfg.project?(allGroups.find(function(g){return g.ID==cfg.project;})||{NAME:'Проект #'+cfg.project}).NAME:'Все задачи';
   await doLoad();
 }
 
@@ -202,7 +211,7 @@ async function doLoad(){
     showLoading('Получаем сотрудников...','Загружено задач: '+tasks.length);
     var uids=[...new Set(tasks.map(function(t){return t.responsibleId||t.RESPONSIBLE_ID;}).filter(Boolean))];
     var users=await fetchUsers(uids);
-    showLoading('Загружаем историю задач...','Считаем итерации сдачи (может занять 30-60 сек)');
+    showLoading('Загружаем историю задач...','Считаем итерации (30-60 сек)');
     var iterations=await fetchIterations(tasks);
     showLoading('Анализируем данные...');
     var data=calcData(tasks,users,iterations);
@@ -220,7 +229,8 @@ async function fetchTasks(){
     filter['>=CREATED_DATE']=d.toISOString().slice(0,10);
   }
   while(true){
-    var r=await b24('tasks.task.list',{filter:filter,start:start,select:['ID','TITLE','RESPONSIBLE_ID','STATUS','DEADLINE','CREATED_DATE','CLOSED_DATE']});
+    var r=await b24('tasks.task.list',{filter:filter,start:start,
+      select:['ID','TITLE','RESPONSIBLE_ID','STATUS','DEADLINE','CREATED_DATE','CLOSED_DATE','GROUP_ID','MARK','PRIORITY']});
     var t=r.tasks||[];
     all=all.concat(t);
     if(t.length<50)break;
@@ -242,26 +252,18 @@ async function fetchUsers(ids){
 
 async function fetchIterations(tasks){
   var map={};
-  // Берём только закрытые задачи (не более 50 для скорости)
-  var closed=tasks.filter(function(t){
-    var st=t.status||t.STATUS;
-    return st==='4'||st==='5';
-  }).slice(0,50);
+  var closed=tasks.filter(function(t){var st=t.status||t.STATUS;return st==='4'||st==='5';}).slice(0,50);
   for(var i=0;i<closed.length;i++){
     var tid=closed[i].id||closed[i].ID;
     try{
       var hist=await b24('tasks.task.history.list',{taskId:tid});
       var list=Array.isArray(hist.list)?hist.list:[];
-      // Считаем сколько раз статус менялся с "завершена" обратно на "в работе" (возврат на доработку)
-      var returns=0;
-      var prevStatus='';
+      var returns=0,prevStatus='';
       list.forEach(function(h){
         if(h.field==='STATUS'||h.field==='status'){
-          var newVal=h.value&&h.value.to;
-          if((newVal==='3'||newVal==='In Progress')&&(prevStatus==='4'||prevStatus==='Completed')){
-            returns++;
-          }
-          prevStatus=newVal||prevStatus;
+          var nv=h.value&&h.value.to;
+          if((nv==='3'||nv==='In Progress')&&(prevStatus==='4'||prevStatus==='Completed'))returns++;
+          prevStatus=nv||prevStatus;
         }
       });
       map[tid]=returns;
@@ -270,17 +272,44 @@ async function fetchIterations(tasks){
   return map;
 }
 
+function weightLabel(mark,priority){
+  // MARK field: '' = normal, 'positive' = easy, 'negative' = hard
+  // Also check PRIORITY: 0=low, 1=normal, 2=high
+  if(mark==='positive'||mark==='1')return{label:'Лёгкая',cls:'weight-easy',score:1};
+  if(mark==='negative'||mark==='3')return{label:'Сложная',cls:'weight-hard',score:3};
+  if(priority==='2')return{label:'Сложная',cls:'weight-hard',score:3};
+  return{label:'Средняя',cls:'weight-med',score:2};
+}
+
 function calcData(tasks,users,iterations){
   var now=new Date();
   var sm={'1':'Новая','2':'Ожидает','3':'В работе','4':'Завершена','5':'Отложена'};
   var emp={};
+
+  // Карта групп из allGroups
+  var groupMap={};
+  allGroups.forEach(function(g){groupMap[g.ID]=g.NAME;});
+
   tasks.forEach(function(t){
     var uid=t.responsibleId||t.RESPONSIBLE_ID;
     var name=users[uid]||('Сотрудник #'+uid);
-    if(!emp[name])emp[name]={name:name,total:0,done:0,overdue:0,inProgress:0,totalDays:0,doneCount:0,score:0,totalIter:0,iterCount:0};
+    var gid=t.groupId||t.GROUP_ID||'';
+    var gname=groupMap[gid]||gid||'Без проекта';
+    var mark=t.mark||t.MARK||'';
+    var priority=t.priority||t.PRIORITY||'1';
+    var w=weightLabel(mark,priority);
+    var tid=String(t.id||t.ID);
+
+    if(!emp[name])emp[name]={name:name,total:0,done:0,overdue:0,inProgress:0,
+      totalDays:0,doneCount:0,score:0,totalIter:0,iterCount:0,
+      weightSum:0,projects:{},tasks:[]};
+
     emp[name].total++;
+    emp[name].weightSum+=w.score;
+    emp[name].projects[gname]=(emp[name].projects[gname]||0)+1;
+    emp[name].tasks.push({id:tid,title:t.title||t.TITLE,weight:w,project:gname,status:sm[t.status||t.STATUS]||'Неизвестно'});
+
     var st=t.status||t.STATUS;
-    var tid=t.id||t.ID;
     if(st==='4'||st==='5'){
       emp[name].done++;
       var cd=new Date(t.createdDate||t.CREATED_DATE);
@@ -292,25 +321,44 @@ function calcData(tasks,users,iterations){
     var dl=t.deadline||t.DEADLINE;
     if(dl&&new Date(dl)<now&&st!=='4')emp[name].overdue++;
   });
+
   Object.values(emp).forEach(function(e){
     e.avgDays=e.doneCount?Math.round(e.totalDays/e.doneCount):0;
     e.avgIter=e.iterCount?Math.round(e.totalIter/e.iterCount*10)/10:0;
+    e.avgWeight=e.total?Math.round(e.weightSum/e.total*10)/10:0;
     var or=e.total?e.overdue/e.total:0;
     var dr=e.total?e.done/e.total:0;
     var ir=e.avgIter>0?(e.avgIter>2?0:e.avgIter>1?0.15:0.25):0.25;
     e.score=Math.max(0,Math.round(dr*55+(1-or)*35+ir*10));
+    // Топ проекты сотрудника
+    e.topProjects=Object.entries(e.projects).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
   });
+
+  // Веса по всем задачам
+  var weightDist={easy:0,med:0,hard:0};
+  tasks.forEach(function(t){
+    var w=weightLabel(t.mark||t.MARK||'',t.priority||t.PRIORITY||'1');
+    if(w.score===1)weightDist.easy++;
+    else if(w.score===3)weightDist.hard++;
+    else weightDist.med++;
+  });
+
   var overdue=tasks.filter(function(t){
     var dl=t.deadline||t.DEADLINE,st=t.status||t.STATUS;
     return dl&&new Date(dl)<now&&st!=='4';
   }).map(function(t){
+    var gid=t.groupId||t.GROUP_ID||'';
     return{id:t.id||t.ID,title:t.title||t.TITLE,
       responsible:users[t.responsibleId||t.RESPONSIBLE_ID]||('#'+(t.responsibleId||t.RESPONSIBLE_ID)),
       deadline:t.deadline||t.DEADLINE,
-      days:Math.floor((now-new Date(t.deadline||t.DEADLINE))/86400000)};
+      days:Math.floor((now-new Date(t.deadline||t.DEADLINE))/86400000),
+      project:allGroups.find(function(g){return g.ID==gid;})?allGroups.find(function(g){return g.ID==gid;}).NAME:(gid||'—')
+    };
   }).sort(function(a,b){return b.days-a.days;});
+
   var sacc={};
   tasks.forEach(function(t){var s=sm[t.status||t.STATUS]||'Неизвестно';sacc[s]=(sacc[s]||0)+1;});
+
   var months=[];
   for(var m=5;m>=0;m--){
     var d=new Date(now);d.setMonth(d.getMonth()-m);
@@ -323,36 +371,40 @@ function calcData(tasks,users,iterations){
     });
   }
   var weeks=[];
-  for(var w=7;w>=0;w--){
-    var ws=new Date(now);ws.setDate(now.getDate()-w*7-6);
-    var we=new Date(now);we.setDate(now.getDate()-w*7);
-    weeks.push({label:'Н-'+(8-w),count:tasks.filter(function(t){var dd=new Date(t.createdDate||t.CREATED_DATE);return dd>=ws&&dd<=we;}).length});
+  for(var w2=7;w2>=0;w2--){
+    var ws=new Date(now);ws.setDate(now.getDate()-w2*7-6);
+    var we=new Date(now);we.setDate(now.getDate()-w2*7);
+    weeks.push({label:'Н-'+(8-w2),count:tasks.filter(function(t){var dd=new Date(t.createdDate||t.CREATED_DATE);return dd>=ws&&dd<=we;}).length});
   }
-  // Топ задач по итерациям
+
   var topIter=Object.entries(iterations).filter(function(e){return e[1]>0;}).map(function(e){
     var t=tasks.find(function(t){return String(t.id||t.ID)===String(e[0]);});
+    var gid=t?(t.groupId||t.GROUP_ID||''):'';
     return{id:e[0],title:t?(t.title||t.TITLE):'#'+e[0],iters:e[1],
-      responsible:t?users[t.responsibleId||t.RESPONSIBLE_ID]||'':''};
+      responsible:t?users[t.responsibleId||t.RESPONSIBLE_ID]||'':'',
+      project:allGroups.find(function(g){return g.ID==gid;})?allGroups.find(function(g){return g.ID==gid;}).NAME:''
+    };
   }).sort(function(a,b){return b.iters-a.iters;}).slice(0,5);
 
   var employees=Object.values(emp).sort(function(a,b){return b.total-a.total;});
   var topRating=[].concat(employees).sort(function(a,b){return b.score-a.score;}).slice(0,10);
   var avgIter=employees.filter(function(e){return e.iterCount>0;});
   var globalAvgIter=avgIter.length?Math.round(avgIter.reduce(function(s,e){return s+e.avgIter;},0)/avgIter.length*10)/10:0;
-  return{employees:employees,topRating:topRating,overdue:overdue,statusDist:Object.entries(sacc),weeks:weeks,months:months,total:tasks.length,topIter:topIter,globalAvgIter:globalAvgIter};
+
+  return{employees:employees,topRating:topRating,overdue:overdue,statusDist:Object.entries(sacc),
+    weeks:weeks,months:months,total:tasks.length,topIter:topIter,globalAvgIter:globalAvgIter,weightDist:weightDist};
 }
 
 async function runAI(data){
   var or=data.total?Math.round(data.overdue.length/data.total*100):0;
   var te=data.employees.slice(0,8);
   var to=data.overdue.slice(0,4);
-  var es=te.map(function(e){return e.name+' задач:'+e.total+' просрочено:'+e.overdue+' итерации:'+e.avgIter+' рейтинг:'+e.score;}).join('; ');
-  var os=to.map(function(t){return t.title+' '+t.days+'дн '+t.responsible;}).join('; ');
-  var ss=data.statusDist.map(function(x){return x[0]+':'+x[1];}).join(', ');
-  var is=data.topIter.map(function(t){return '"'+t.title+'" '+t.iters+' возвратов';}).join('; ');
+  var es=te.map(function(e){return e.name+' задач:'+e.total+' вес:'+e.avgWeight+' проектов:'+Object.keys(e.projects).length+' просрочено:'+e.overdue+' итерации:'+e.avgIter+' рейтинг:'+e.score;}).join('; ');
+  var os=to.map(function(t){return '"'+t.title+'" '+t.days+'дн '+t.responsible+' ['+t.project+']';}).join('; ');
+  var ws='Лёгких:'+data.weightDist.easy+' Средних:'+data.weightDist.med+' Сложных:'+data.weightDist.hard;
   var p1='Ты аналитик строительной компании. Проанализируй данные Bitrix24 на русском языке.';
-  var p2='Всего задач: '+data.total+'. Просроченных: '+data.overdue.length+' ('+or+'%). Ср. итерации сдачи: '+data.globalAvgIter+'.';
-  var p3='Топ просроченных: '+os+'. Сотрудники: '+es+'. Статусы: '+ss+'. Задачи с возвратами: '+is+'.';
+  var p2='Всего задач: '+data.total+'. Просроченных: '+data.overdue.length+' ('+or+'%). Ср. итерации: '+data.globalAvgIter+'. Распределение по весу: '+ws+'.';
+  var p3='Топ просроченных: '+os+'. Сотрудники: '+es+'.';
   var p4='Верни ТОЛЬКО JSON: {"summary":"оценка","risks":["р1","р2","р3"],"bottlenecks":["б1","б2"],"topIssues":[{"employee":"имя","issue":"проблема","severity":"high"}],"recommendations":["рек1","рек2","рек3"],"overallScore":25}';
   var prompt=p1+'\n'+p2+'\n'+p3+'\n'+p4;
   try{
@@ -364,18 +416,17 @@ async function runAI(data){
     var d=await r.json();
     if(d.error)throw new Error(JSON.stringify(d.error));
     var txt=(d.content||[]).map(function(b){return b.text||'';}).join('').trim();
-    var start=txt.indexOf('{'),end=txt.lastIndexOf('}');
-    if(start>=0&&end>start)return JSON.parse(txt.slice(start,end+1));
+    var s=txt.indexOf('{'),e2=txt.lastIndexOf('}');
+    if(s>=0&&e2>s)return JSON.parse(txt.slice(s,e2+1));
     throw new Error('no json');
   }catch(e){
-    console.error('AI:',e.message);
-    var score=Math.max(5,100-or);
+    var score=Math.max(5,100-Math.round(data.overdue.length/Math.max(data.total,1)*100));
     return{
-      summary:'В системе '+data.total+' задач, из которых '+data.overdue.length+' ('+or+'%) просрочены. Среднее число итераций сдачи: '+data.globalAvgIter+'. Требуется внимание руководства.',
-      risks:[or+'% задач просрочено','Среднее '+data.globalAvgIter+' итерации на задачу','Документы не закрываются в день сдачи'],
-      bottlenecks:['Задачи выполнены но не закрыты в системе','Возвраты на доработку без фиксации причины'],
-      topIssues:te.filter(function(e){return e.overdue>5;}).slice(0,3).map(function(e){return{employee:e.name,issue:e.overdue+' просроченных, '+e.avgIter+' итерации',severity:'high'};}),
-      recommendations:['Закрывать задачи в день сдачи результата','Возврат через кнопку с указанием причины','Установить дедлайн для каждой задачи'],
+      summary:'В системе '+data.total+' задач. Просроченных: '+data.overdue.length+'. Ср. вес задач по команде отображён в таблице.',
+      risks:['Задачи не закрываются в день сдачи','Отсутствуют дедлайны у части задач','Накопление незакрытых задач'],
+      bottlenecks:['Задачи в статусе Ожидание без движения','Возвраты не фиксируются через систему'],
+      topIssues:data.employees.filter(function(e){return e.overdue>5;}).slice(0,3).map(function(e){return{employee:e.name,issue:e.overdue+' просроченных',severity:'high'};}),
+      recommendations:['Закрывать задачи в день сдачи','Установить дедлайн для каждой задачи','Использовать кнопку возврата на доработку'],
       overallScore:score
     };
   }
@@ -384,7 +435,17 @@ async function runAI(data){
 function sc(v){return v>=70?'#23c95e':v>=40?'#e8a923':'#e85423';}
 function lbl(v){return v>=70?'норма':v>=40?'внимание':'критично';}
 function sbg(v){return v>=70?'rgba(35,201,94,0.15)':v>=40?'rgba(232,169,35,0.15)':'rgba(232,84,35,0.15)';}
-function iterClass(v){return v===0?'iter-good':v<=1.5?'iter-warn':'iter-bad';}
+function iCls(v){return v===0?'iter-good':v<=1.5?'iter-warn':'iter-bad';}
+
+var expandedRows={};
+
+function toggleRow(name){
+  expandedRows[name]=!expandedRows[name];
+  var row=document.getElementById('detail-'+name.replace(/[^a-zA-Z0-9]/g,'_'));
+  var btn=document.getElementById('btn-'+name.replace(/[^a-zA-Z0-9]/g,'_'));
+  if(row){row.style.display=expandedRows[name]?'':'none';}
+  if(btn){btn.textContent=expandedRows[name]?'▲':'▼';}
+}
 
 function renderDash(data,ai){
   var s=ai.overallScore||0;
@@ -394,45 +455,85 @@ function renderDash(data,ai){
   var or=data.total?Math.round(data.overdue.length/data.total*100):0;
   var avg=data.employees.length?Math.round(data.employees.reduce(function(a,e){return a+e.score;},0)/data.employees.length):0;
 
+  // Employee table rows with expandable project details
   var erows=data.employees.map(function(e){
     var pct=e.total?Math.round(e.done/e.total*100):0;
     var col=e.overdue>2?'#e85423':e.overdue>0?'#e8a923':'#23c95e';
     var ll=e.overdue>2?'критично':e.overdue>0?'внимание':'норма';
     var issue=(ai.topIssues||[]).find(function(i){return i.employee===e.name;});
     var progColor=pct>70?'#23c95e':pct>40?'#e8a923':'#e85423';
-    var iterHtml=e.iterCount>0
-      ?'<span class="iter-badge '+iterClass(e.avgIter)+'">'+e.avgIter+'</span>'
-      :'<span style="color:var(--dim);font-size:11px;">—</span>';
-    return '<tr>'
-      +'<td><div style="font-weight:600;">'+e.name+'</div>'+(issue?'<div style="font-size:11px;color:var(--danger);margin-top:2px;">'+issue.issue+'</div>':'')+'</td>'
+    var iterHtml=e.iterCount>0?'<span class="iter-badge '+iCls(e.avgIter)+'">'+e.avgIter+'</span>':'<span style="color:var(--dim);font-size:11px;">—</span>';
+    var wColor=e.avgWeight>=2.5?'#e85423':e.avgWeight>=1.8?'#e8a923':'#23c95e';
+    var wLabel=e.avgWeight>=2.5?'Сложные':e.avgWeight>=1.8?'Средние':'Лёгкие';
+    var projHtml=e.topProjects.map(function(p){return'<span class="proj-tag" title="'+p[0]+'">'+p[0]+'</span>';}).join(' ');
+    var safeId=e.name.replace(/[^a-zA-Z0-9]/g,'_');
+
+    var mainRow='<tr>'
+      +'<td><div style="display:flex;align-items:center;gap:6px;">'
+      +'<button class="expand-btn" id="btn-'+safeId+'" onclick="toggleRow(\''+e.name.replace(/\'/g,"\\'")+'\')" title="Показать задачи по проектам">▼</button>'
+      +'<div><div style="font-weight:600;">'+e.name+'</div>'
+      +(issue?'<div style="font-size:11px;color:var(--danger);margin-top:2px;">'+issue.issue+'</div>':'')
+      +'</div></div></td>'
       +'<td style="font-family:var(--mono);">'+e.total+'</td>'
       +'<td style="font-family:var(--mono);color:#e8a923;">'+e.inProgress+'</td>'
       +'<td style="font-family:var(--mono);color:#23c95e;">'+e.done+'</td>'
       +'<td style="font-family:var(--mono);color:'+(e.overdue>0?'#e85423':'#718096')+';font-weight:'+(e.overdue>0?700:400)+';">'+(e.overdue>0?'⚠ '+e.overdue:0)+'</td>'
+      +'<td><span style="font-size:11px;font-weight:700;color:'+wColor+';">'+wLabel+'</span><div style="font-size:10px;color:var(--dim);">ср. '+e.avgWeight+'</div></td>'
+      +'<td style="max-width:180px;">'+projHtml+'</td>'
       +'<td>'+iterHtml+'</td>'
       +'<td style="font-size:12px;color:var(--dim);">'+(e.avgDays?e.avgDays+' дн.':'—')+'</td>'
-      +'<td style="min-width:90px;"><div style="font-size:10px;color:var(--dim);">'+pct+'%</div><div class="pb"><div class="pf" style="width:'+pct+'%;background:'+sc(pct)+';"></div></div></td>'
+      +'<td style="min-width:80px;"><div style="font-size:10px;color:var(--dim);">'+pct+'%</div><div class="pb"><div class="pf" style="width:'+pct+'%;background:'+sc(pct)+';"></div></div></td>'
       +'<td><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+sc(e.score)+';">'+e.score+'</span></td>'
       +'<td><span class="bdg" style="background:'+col+'22;color:'+col+';border:1px solid '+col+'44;">'+ll+'</span></td>'
       +'</tr>';
+
+    // Detail row — tasks by project
+    var projGroups={};
+    e.tasks.forEach(function(t){projGroups[t.project]=(projGroups[t.project]||[]).concat(t);});
+    var detailContent=Object.entries(projGroups).map(function(pg){
+      var pname=pg[0],ptasks=pg[1];
+      var easy=ptasks.filter(function(t){return t.weight.score===1;}).length;
+      var med=ptasks.filter(function(t){return t.weight.score===2;}).length;
+      var hard=ptasks.filter(function(t){return t.weight.score===3;}).length;
+      return '<div style="margin-bottom:10px;">'
+        +'<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;">📁 '+pname+' <span style="font-size:11px;color:var(--dim);font-weight:400;">('+ptasks.length+' задач)</span></div>'
+        +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        +(easy?'<span class="weight-easy">Лёгких: '+easy+'</span>':'')
+        +(med?'<span class="weight-med">Средних: '+med+'</span>':'')
+        +(hard?'<span class="weight-hard">Сложных: '+hard+'</span>':'')
+        +'</div>'
+        +'</div>';
+    }).join('');
+
+    var detailRow='<tr class="detail-row" id="detail-'+safeId+'" style="display:none;">'
+      +'<td colspan="12" style="padding:8px 10px 14px 36px;">'
+      +'<div style="font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;">Задачи по проектам</div>'
+      +detailContent
+      +'</td></tr>';
+
+    return mainRow+detailRow;
   }).join('');
 
   var rrows=data.topRating.map(function(e,i){
     var medals=['🥇','🥈','🥉'];
-    var iterHtml=e.iterCount>0?'<span class="iter-badge '+iterClass(e.avgIter)+'" style="margin-left:6px;">'+e.avgIter+' ит.</span>':'';
+    var iterHtml=e.iterCount>0?'<span class="iter-badge '+iCls(e.avgIter)+'" style="margin-left:6px;font-size:10px;">'+e.avgIter+' ит.</span>':'';
+    var wColor=e.avgWeight>=2.5?'#e85423':e.avgWeight>=1.8?'#e8a923':'#23c95e';
     return '<div class="rt-row">'
       +'<div style="width:26px;font-size:'+(i<3?16:12)+'px;flex-shrink:0;">'+(i<3?medals[i]:'#'+(i+1))+'</div>'
-      +'<div style="flex:1;font-weight:600;font-size:13px;">'+e.name+iterHtml+'</div>'
-      +'<div style="font-size:11px;color:var(--dim);width:70px;flex-shrink:0;">задач: '+e.total+'</div>'
-      +'<div style="width:100px;flex-shrink:0;"><div class="pb"><div class="pf" style="width:'+e.score+'%;background:'+sc(e.score)+';"></div></div></div>'
-      +'<div style="font-size:13px;font-weight:700;font-family:var(--mono);color:'+sc(e.score)+';width:36px;text-align:right;flex-shrink:0;">'+e.score+'</div>'
+      +'<div style="flex:1;font-weight:600;font-size:12px;">'+e.name+iterHtml+'</div>'
+      +'<div style="font-size:11px;color:'+wColor+';width:50px;flex-shrink:0;text-align:center;">'+e.avgWeight+'⚖</div>'
+      +'<div style="font-size:11px;color:var(--dim);width:60px;flex-shrink:0;">'+e.total+' задач</div>'
+      +'<div style="width:80px;flex-shrink:0;"><div class="pb"><div class="pf" style="width:'+e.score+'%;background:'+sc(e.score)+';"></div></div></div>'
+      +'<div style="font-size:12px;font-weight:700;font-family:var(--mono);color:'+sc(e.score)+';width:30px;text-align:right;flex-shrink:0;">'+e.score+'</div>'
       +'</div>';
   }).join('');
 
   var oitems=data.overdue.slice(0,10).map(function(t){
     return '<div class="ov-item">'
       +'<div><div style="font-size:13px;font-weight:600;">'+t.title+'</div>'
-      +'<div style="font-size:11px;color:var(--dim);margin-top:2px;">'+t.responsible+' · дедлайн: '+new Date(t.deadline).toLocaleDateString('ru')+'</div></div>'
+      +'<div style="font-size:11px;color:var(--dim);margin-top:2px;">'+t.responsible
+      +(t.project?' · <span class="proj-tag">'+t.project+'</span>':'')
+      +' · дедлайн: '+new Date(t.deadline).toLocaleDateString('ru')+'</div></div>'
       +'<div class="ov-days">+'+t.days+' дн.</div>'
       +'</div>';
   }).join('');
@@ -447,14 +548,15 @@ function renderDash(data,ai){
   var iterBlock='';
   if(data.topIter&&data.topIter.length>0){
     iterBlock='<div class="chart-card" style="margin-bottom:14px;">'
-      +'<div class="sec-title">🔄 Топ задач по возвратам на доработку'
-      +(data.globalAvgIter>0?' <span style="font-size:11px;color:var(--dim);font-weight:400;">ср. по команде: <span style="color:'+(data.globalAvgIter>1.5?'#e85423':data.globalAvgIter>1?'#e8a923':'#23c95e')+';">'+data.globalAvgIter+'</span></span>':'')
+      +'<div class="sec-title">🔄 Топ задач по возвратам'
+      +(data.globalAvgIter>0?' <span style="font-size:11px;color:var(--dim);font-weight:400;">ср.: <span style="color:'+(data.globalAvgIter>1.5?'#e85423':data.globalAvgIter>1?'#e8a923':'#23c95e')+';">'+data.globalAvgIter+'</span></span>':'')
       +'</div>'
       +data.topIter.map(function(t){
         var cls=t.iters>=3?'iter-bad':t.iters>=2?'iter-warn':'iter-good';
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface);border-radius:8px;margin-bottom:7px;">'
           +'<div><div style="font-size:13px;font-weight:600;">'+t.title+'</div>'
-          +(t.responsible?'<div style="font-size:11px;color:var(--dim);margin-top:2px;">'+t.responsible+'</div>':'')
+          +'<div style="font-size:11px;color:var(--dim);margin-top:2px;">'+t.responsible
+          +(t.project?' · <span class="proj-tag">'+t.project+'</span>':'')+'</div>'
           +'</div>'
           +'<span class="iter-badge '+cls+'">'+t.iters+' '+(t.iters===1?'возврат':t.iters<5?'возврата':'возвратов')+'</span>'
           +'</div>';
@@ -462,24 +564,34 @@ function renderDash(data,ai){
       +'</div>';
   }
 
-  el('app').innerHTML='<div class="dash" id="dash-content">'
+  // Weight distribution card
+  var wTotal=data.weightDist.easy+data.weightDist.med+data.weightDist.hard;
+  var wBlock='<div class="chart-card">'
+    +'<div class="sec-title">⚖ Распределение по весу</div>'
+    +'<div style="margin-bottom:10px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;color:#23c95e;">Лёгкие</span><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:#23c95e;">'+data.weightDist.easy+'</span></div>'
+    +'<div class="pb"><div class="pf" style="width:'+(wTotal?Math.round(data.weightDist.easy/wTotal*100):0)+'%;background:#23c95e;"></div></div>'
+    +'</div>'
+    +'<div style="margin-bottom:10px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;color:#e8a923;">Средние</span><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:#e8a923;">'+data.weightDist.med+'</span></div>'
+    +'<div class="pb"><div class="pf" style="width:'+(wTotal?Math.round(data.weightDist.med/wTotal*100):0)+'%;background:#e8a923;"></div></div>'
+    +'</div>'
+    +'<div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;color:#e85423;">Сложные</span><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:#e85423;">'+data.weightDist.hard+'</span></div>'
+    +'<div class="pb"><div class="pf" style="width:'+(wTotal?Math.round(data.weightDist.hard/wTotal*100):0)+'%;background:#e85423;"></div></div>'
+    +'</div>'
+    +'</div>';
+
+  el('app').innerHTML='<div class="dash">'
     +'<div class="header no-print">'
     +'<div><div style="font-size:10px;letter-spacing:4px;color:var(--accent);font-weight:700;margin-bottom:4px;">BITRIX24 · AI</div>'
     +'<div style="font-size:21px;font-weight:700;">'+cfg.projName+(cfg.period?' · '+cfg.period+' дн.':'')+'</div></div>'
     +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'
-    +'<span style="font-size:11px;color:var(--dim);font-family:var(--mono);" id="upd-time">'+new Date().toLocaleString('ru')+'</span>'
-    +'<button class="acc-btn" onclick="showProjectStep()">↻ Фильтры</button>'
+    +'<span style="font-size:11px;color:var(--dim);font-family:var(--mono);">'+new Date().toLocaleString('ru')+'</span>'
+    +'<button class="acc-btn" onclick="changeProject()">↻ Фильтры</button>'
     +'<button class="sm-btn" style="color:var(--success);" onclick="exportCSV()">⬇ Excel</button>'
     +'<button class="pdf-btn" onclick="exportPDF()">📄 PDF</button>'
     +'<button class="sm-btn" onclick="showSetup()">⚙</button>'
-    +'</div></div>'
-
-    // Print header (only in PDF)
-    +'<div style="display:none;" class="print-only" id="print-header">'
-    +'<div style="text-align:center;padding:12px 0 16px;border-bottom:2px solid #1F3864;margin-bottom:16px;">'
-    +'<div style="font-size:10px;letter-spacing:4px;color:#1F3864;font-weight:700;margin-bottom:4px;">BITRIX24 · AI АНАЛИТИКА</div>'
-    +'<div style="font-size:20px;font-weight:700;color:#1F3864;">Отчёт: '+cfg.projName+(cfg.period?' · '+cfg.period+' дн.':'')+'</div>'
-    +'<div style="font-size:12px;color:#888;margin-top:4px;">Сформирован: '+new Date().toLocaleString('ru')+'</div>'
     +'</div></div>'
 
     +'<div class="kpis">'
@@ -492,18 +604,15 @@ function renderDash(data,ai){
 
     +'<div class="ai-card"><div class="ai-row">'
     +'<div style="flex-shrink:0;text-align:center;">'
-    +'<svg width="90" height="90" viewBox="0 0 90 90">'
-    +'<circle cx="45" cy="45" r="36" fill="none" stroke="#1e2d45" stroke-width="7"/>'
+    +'<svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="#1e2d45" stroke-width="7"/>'
     +'<circle cx="45" cy="45" r="36" fill="none" stroke="'+sc(s)+'" stroke-width="7" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-s/100))+'" stroke-linecap="round" transform="rotate(-90 45 45)"/>'
-    +'<text x="45" y="50" text-anchor="middle" fill="'+sc(s)+'" font-size="18" font-weight="800" font-family="IBM Plex Mono,monospace">'+s+'</text>'
-    +'</svg>'
+    +'<text x="45" y="50" text-anchor="middle" fill="'+sc(s)+'" font-size="18" font-weight="800" font-family="IBM Plex Mono,monospace">'+s+'</text></svg>'
     +'<div style="font-size:10px;color:var(--dim);margin-top:4px;letter-spacing:1px;">ИНДЕКС</div>'
     +'</div>'
     +'<div class="ai-body">'
     +'<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">'
     +'<span style="font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700;">AI АНАЛИЗ</span>'
-    +'<span class="bdg" style="background:'+sbg(s)+';color:'+sc(s)+';border:1px solid '+sc(s)+'44;">'+lbl(s)+'</span>'
-    +'</div>'
+    +'<span class="bdg" style="background:'+sbg(s)+';color:'+sc(s)+';border:1px solid '+sc(s)+'44;">'+lbl(s)+'</span></div>'
     +'<div style="font-size:14px;line-height:1.7;margin-bottom:12px;">'+(ai.summary||'')+'</div>'
     +'<div class="ai-cols">'
     +'<div class="ai-col"><div class="col-title" style="color:#e85423;">Риски</div>'+(ai.risks||[]).map(function(r){return'<div class="bullet">'+r+'</div>';}).join('')+'</div>'
@@ -515,21 +624,21 @@ function renderDash(data,ai){
 
     +'<div class="charts-row">'
     +'<div class="chart-card"><div class="sec-title">Динамика по месяцам</div><div class="chart-box"><canvas id="dynC"></canvas></div></div>'
-    +'<div class="chart-card"><div class="sec-title">Статусы задач</div><div class="chart-box" style="height:130px;"><canvas id="pieC"></canvas></div><div style="margin-top:10px;">'+sitems+'</div></div>'
+    +'<div class="chart-card"><div class="sec-title">Статусы задач</div><div class="chart-box" style="height:120px;"><canvas id="pieC"></canvas></div><div style="margin-top:8px;">'+sitems+'</div></div>'
     +'</div>'
 
     +'<div class="two-col">'
     +'<div class="chart-card"><div class="sec-title">🏆 Рейтинг эффективности</div>'+rrows+'</div>'
-    +'<div class="chart-card"><div class="sec-title">Нагрузка по неделям</div><div class="chart-box"><canvas id="barC"></canvas></div></div>'
+    +wBlock
     +'</div>'
 
     +'<div class="tbl-card">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">'
     +'<div class="sec-title" style="margin:0;">Нагрузка сотрудников</div>'
-    +'<div style="font-size:11px;color:var(--dim);">Итерации = кол-во возвратов на доработку</div>'
+    +'<div style="font-size:11px;color:var(--dim);">▼ = задачи по проектам · ⚖ = вес задач · итерации = возвраты</div>'
     +'</div>'
     +'<table><thead><tr>'
-    +'<th>Сотрудник</th><th>Всего</th><th>В работе</th><th>Выполнено</th><th>Просрочено</th><th>Итерации</th><th>Ср. время</th><th>Прогресс</th><th>Рейтинг</th><th>Статус</th>'
+    +'<th>Сотрудник</th><th>Всего</th><th>В работе</th><th>Выполнено</th><th>Просрочено</th><th>Вес задач</th><th>Проекты</th><th>Итерации</th><th>Ср.время</th><th>Прогресс</th><th>Рейтинг</th><th>Статус</th>'
     +'</tr></thead><tbody>'+erows+'</tbody></table></div>'
 
     +(data.overdue.length>0?'<div class="ov-card">'
@@ -540,42 +649,28 @@ function renderDash(data,ai){
     +'</div>':'')
     +'</div>';
 
-  [barC,pieC,dynC].forEach(function(c){if(c)c.destroy();});
-  barC=pieC=dynC=null;
-
+  [barC,pieC,dynC].forEach(function(c){if(c)c.destroy();});barC=pieC=dynC=null;
   var bCtx=el('barC');
-  if(bCtx)barC=new Chart(bCtx,{type:'bar',
-    data:{labels:data.weeks.map(function(w){return w.label;}),datasets:[{label:'Задач',data:data.weeks.map(function(w){return w.count;}),backgroundColor:'rgba(232,169,35,0.7)',borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}},y:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}}}}
-  });
+  if(bCtx)barC=new Chart(bCtx,{type:'bar',data:{labels:data.weeks.map(function(w){return w.label;}),datasets:[{label:'Задач',data:data.weeks.map(function(w){return w.count;}),backgroundColor:'rgba(232,169,35,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}},y:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}}}}});
   var pCtx=el('pieC');
-  if(pCtx&&data.statusDist.length)pieC=new Chart(pCtx,{type:'doughnut',
-    data:{labels:data.statusDist.map(function(x){return x[0];}),datasets:[{data:data.statusDist.map(function(x){return x[1];}),backgroundColor:PIE,borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-  });
+  if(pCtx&&data.statusDist.length)pieC=new Chart(pCtx,{type:'doughnut',data:{labels:data.statusDist.map(function(x){return x[0];}),datasets:[{data:data.statusDist.map(function(x){return x[1];}),backgroundColor:PIE,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
   var dCtx=el('dynC');
-  if(dCtx)dynC=new Chart(dCtx,{type:'line',
-    data:{labels:data.months.map(function(m){return m.label;}),
-      datasets:[
-        {label:'Создано',data:data.months.map(function(m){return m.created;}),borderColor:'#e8a923',backgroundColor:'rgba(232,169,35,0.1)',tension:0.4,fill:true},
-        {label:'Закрыто',data:data.months.map(function(m){return m.closed;}),borderColor:'#23c95e',backgroundColor:'rgba(35,201,94,0.1)',tension:0.4,fill:true}
-      ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#718096',font:{size:11}}}},scales:{x:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}},y:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}}}}
-  });
+  if(dCtx)dynC=new Chart(dCtx,{type:'line',data:{labels:data.months.map(function(m){return m.label;}),datasets:[{label:'Создано',data:data.months.map(function(m){return m.created;}),borderColor:'#e8a923',backgroundColor:'rgba(232,169,35,0.1)',tension:0.4,fill:true},{label:'Закрыто',data:data.months.map(function(m){return m.closed;}),borderColor:'#23c95e',backgroundColor:'rgba(35,201,94,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#718096',font:{size:11}}}},scales:{x:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}},y:{grid:{color:'rgba(30,45,69,0.5)'},ticks:{color:'#718096',font:{size:10}}}}}});
   window._dd=data;
+}
+
+function changeProject(){
+  showProjectStep(allGroups);
 }
 
 function exportCSV(){
   if(!window._dd)return;
-  var rows=[['Сотрудник','Всего','В работе','Выполнено','Просрочено','Итерации','Ср.дней','Рейтинг','Статус']];
+  var rows=[['Сотрудник','Всего','В работе','Выполнено','Просрочено','Вес','Итерации','Ср.дней','Рейтинг','Статус','Проекты']];
   window._dd.employees.forEach(function(e){
-    rows.push([e.name,e.total,e.inProgress,e.done,e.overdue,e.avgIter||0,e.avgDays||0,e.score,e.overdue>2?'критично':e.overdue>0?'внимание':'норма']);
+    rows.push([e.name,e.total,e.inProgress,e.done,e.overdue,e.avgWeight,e.avgIter||0,e.avgDays||0,e.score,e.overdue>2?'критично':e.overdue>0?'внимание':'норма',e.topProjects.map(function(p){return p[0]+'('+p[1]+')';}).join('; ')]);
   });
   var csv=String.fromCharCode(0xFEFF);
-  rows.forEach(function(r){
-    var line=r.map(function(v){return String(v).replace(/,/g,' ');}).join(';');
-    csv+=line+'\n';
-  });
+  rows.forEach(function(r){csv+=r.map(function(v){return String(v).replace(/;/g,' ');}).join(';')+'\n';});
   var a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='b24-report-'+new Date().toISOString().slice(0,10)+'.csv';
@@ -583,20 +678,7 @@ function exportCSV(){
 }
 
 function exportPDF(){
-  // Show print header
-  var ph=el('print-header');
-  if(ph)ph.style.display='block';
-  // Apply print styles
-  document.body.style.background='#fff';
-  document.body.style.color='#000';
-  // Trigger print
   window.print();
-  // Restore
-  setTimeout(function(){
-    if(ph)ph.style.display='none';
-    document.body.style.background='';
-    document.body.style.color='';
-  },1000);
 }
 
 showSetup();
